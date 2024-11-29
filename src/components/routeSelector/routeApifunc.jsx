@@ -2,7 +2,7 @@ import axios from "axios";
 
 export async function getRoutesFromApi(startCity, destination) {
   const baseURL =
-    "https://flight-booking-and-reservation.onrender.com/booking/";
+    "https://flight-booking-and-reservation.onrender.com/api/booking/";
   try {
     const response = await axios.post(baseURL, { startCity, destination });
     return response.data; // Returns data if request is successful
