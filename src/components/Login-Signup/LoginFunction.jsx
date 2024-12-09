@@ -3,7 +3,7 @@ import axios from "axios";
 
 export function logUserIn(userCredentials) {
   const apiUrl = `${import.meta.env.VITE_API_URL}/login`;
-   console.log(apiUrl);
+   console.log("API URL:", apiUrl); 
   return axios.post(apiUrl, userCredentials, {
     headers: {
       "Content-Type": "application/json",
