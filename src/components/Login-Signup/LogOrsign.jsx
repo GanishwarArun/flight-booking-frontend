@@ -5,6 +5,8 @@ import { useNavigate } from "react-router-dom";
 
 export default function LogOrsign() {
   const [userData, setUserData] = useState({});
+  const [error, setError] = useState(""); // Added for error handling
+  const [loading, setLoading] = useState(false); // Added for button loading state
   const navigate = useNavigate();
 
   const getToSignUp = (e) => {
@@ -16,16 +18,27 @@ export default function LogOrsign() {
     setUserData({ ...userData, [title]: e.target.value });
   };
 
-  const submitData = (e) => {
+  const submitData = async (e) => {
     e.preventDefault();
-    logFunc
-      .logUserIn(userData)
-      .then((response) => response.data)
-      .then((data) => {
-        const { token } = data;
-        sessionStorage.setItem("authToken", token);
-        navigate("/routes");
-      });
+    setError(""); // Clear previous errors
+    setLoading(true); // Start loading state
+
+    try {
+      const response = await logFunc.logUserIn(userData);
+      const data = response.data;
+
+      const { token } = data;
+      sessionStorage.setItem("authToken", token); // Save token to sessionStorage
+      navigate("/routes");
+    } catch (err) {
+      // Handle errors
+      console.error("Login failed:", err.response?.data || err.message);
+      setError(
+        err.response?.data?.message || "Failed to log in. Please try again."
+      );
+    } finally {
+      setLoading(false); // Stop loading state
+    }
   };
 
   return (
@@ -61,6 +74,9 @@ export default function LogOrsign() {
             Enter Credentials
           </h2>
           <form onSubmit={submitData} className="space-y-4">
+            {error && (
+              <p className="text-red-500 text-sm font-semibold">{error}</p>
+            )}
             <div className="relative">
               <input
                 type="email"
@@ -87,9 +103,14 @@ export default function LogOrsign() {
             </div>
             <button
               type="submit"
-              className="w-full py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition duration-200 font-bold"
+              disabled={loading} // Disable button during loading
+              className={`w-full py-3 rounded-lg font-bold transition duration-200 ${
+                loading
+                  ? "bg-gray-400 text-gray-700 cursor-not-allowed"
+                  : "bg-purple-600 text-white hover:bg-purple-700"
+              }`}
             >
-              Login
+              {loading ? "Logging in..." : "Login"}
             </button>
           </form>
           <div className="mt-6 text-center">
