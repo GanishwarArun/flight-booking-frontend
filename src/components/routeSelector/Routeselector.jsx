@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 export default function RouteSelector() {
@@ -7,6 +8,8 @@ export default function RouteSelector() {
   const [destination, setDestination] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
+  const navigate = useNavigate(); 
 
   const getRoutes = async (e) => {
     e.preventDefault();
@@ -32,7 +35,6 @@ export default function RouteSelector() {
       if (response.data && response.data.buses) {
         const buses = response.data.buses.map((bus) => ({
           ...bus,
-          // Removed the departureDate formatting as it is no longer needed
         }));
         setDataInp(buses);
         if (buses.length === 0) {
@@ -50,8 +52,7 @@ export default function RouteSelector() {
   };
 
   const handleBookFlight = (bus) => {
-    alert(`Booking bus: ${bus.companyName}`);
-    // Implement booking functionality here
+    navigate("/bookticket", { state: { bus } });
   };
 
   return (
@@ -82,8 +83,6 @@ export default function RouteSelector() {
             <option value="Bangalore">Bangalore</option>
             <option value="Chennai">Chennai</option>
           </select>
-
-          {/* Removed date input */}
 
           <button
             type="submit"
